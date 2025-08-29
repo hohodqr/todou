@@ -29,7 +29,7 @@ jobs:
         run: |
           # 使用 curl 请求目标地址，并将响应体保存到文件
           # 这里以 JSON 为例，您可以根据需要更改文件名和 URL
-          curl -fsSL 'https://sub.tudou218.com/api/v1/client/subscribe?token=ba1b45b8c3a899f063913a9c5397e1d9' -o fetched_data
+          curl -fsSL 'https://sub.tudou217.com/api/v1/client/subscribe?token=ba1b45b8c3a899f063913a9c5397e1d9' -o fetched_data
 
           # 您也可以请求其他类型的内容，例如：
           # curl -fsSL 'https://example.com/status' -o response.txt

@@ -1,0 +1,54 @@
+name: Fetch Data and Commit
+
+on:
+  # 每天凌晨 2 点运行（可根据需要修改）
+  schedule:
+    - cron: '0 2 * * *'
+
+  # 也可以手动触发
+  workflow_dispatch:
+
+  # 或者在 push 到 main 分支时触发
+  # push:
+  #   branches: [ main ]
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 检出仓库代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # 必须设置 token 以允许后续步骤推送更改
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. 发送 HTTP 请求并保存响应
+      - name: Fetch data from URL
+        run: |
+          # 使用 curl 请求目标地址，并将响应体保存到文件
+          # 这里以 JSON 为例，您可以根据需要更改文件名和 URL
+          curl -fsSL 'https://sub.tudou218.com/api/v1/client/subscribe?token=ba1b45b8c3a899f063913a9c5397e1d9' -o fetched_data
+
+          # 您也可以请求其他类型的内容，例如：
+          # curl -fsSL 'https://example.com/status' -o response.txt
+
+      # 3. 检查是否有变更并提交
+      - name: Commit and Push if changed
+        run: |
+          # 检查文件是否已存在变更
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # 添加变更的文件
+          git add fetched_data
+
+          # 如果有变更，则提交并推送
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "feat: update fetched data $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+            echo "Changes committed and pushed."
+          fi
